@@ -26,6 +26,7 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 import { CodeBlock } from "@/components/CodeBlock";
+import { SEOHead } from '../components/SEOHead';
 
 export function LandingPage() {
   const { login } = useAuth();
@@ -93,8 +94,26 @@ export function LandingPage() {
     { number: "Free", label: "Open Source" },
   ];
 
+  // SEO configuration for landing page
+  const seoConfig = {
+    title: 'Snippets Library - Organize, Share & Discover Code Snippets',
+    description: 'The ultimate code snippet manager for developers. Organize, share, and discover code snippets with beautiful syntax highlighting, GitHub integration, and powerful search. Perfect for teams and individual developers.',
+    keywords: 'code snippets, code manager, developer tools, programming, syntax highlighting, GitHub, code sharing, developer productivity, code organization, snippet library, programming languages, code examples, development tools, open source',
+    image: `${window.location.origin}/icons/web-app-manifest-512x512.png`,
+    type: 'website' as const,
+    author: 'Snippets Library Team',
+    siteName: 'Snippets Library',
+    twitterHandle: '@snippetslibrary',
+    category: 'Developer Tools',
+    tags: ['code snippets', 'developer tools', 'programming', 'GitHub', 'syntax highlighting', 'productivity'],
+    breadcrumbs: [
+      { name: 'Home', url: `${window.location.origin}/` }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead {...seoConfig} />
       {/* Background Pattern */}
       <div className="fixed inset-0 -z-10 bg-background">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />

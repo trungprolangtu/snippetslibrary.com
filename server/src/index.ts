@@ -29,21 +29,36 @@ const app = new Hono();
 app.use('*', logger());
 app.use('*', cors({
   origin: (origin) => {
+    console.log('CORS origin request:', origin);
+    
     // Allow requests from any localhost port in development
     if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
       return origin;
     }
+    
     // Add your production domains here
     const allowedOrigins = [
       'https://snippetslibrary.com',
       'https://www.snippetslibrary.com'
     ];
-    return allowedOrigins.includes(origin) ? origin : null;
+    
+    const isAllowed = allowedOrigins.includes(origin);
+    console.log('CORS check:', origin, 'allowed:', isAllowed);
+    
+    return isAllowed ? origin : null;
   },
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposeHeaders: ['Content-Length', 'X-Kuma-Revision'],
+  maxAge: 86400, // 24 hours
 }));
+
+// Explicit OPTIONS handler for preflight requests
+app.options('*', (c) => {
+  console.log('OPTIONS request to:', c.req.url);
+  return c.text('', 204 as any);
+});
 
 // Health check
 app.get('/', (c) => {
@@ -52,7 +67,9 @@ app.get('/', (c) => {
     success: true,
     data: {
       version: '1.0.0',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173'
     }
   });
 });
@@ -60,6 +77,20 @@ app.get('/', (c) => {
 // API Routes
 app.route('/api/auth', auth);
 app.route('/api/snippets', snippets);
+
+// Debug route to check CORS
+app.get('/api/debug/cors', (c) => {
+  return c.json<ApiResponse>({
+    message: 'CORS debug endpoint',
+    success: true,
+    data: {
+      origin: c.req.header('Origin'),
+      userAgent: c.req.header('User-Agent'),
+      method: c.req.method,
+      headers: Object.fromEntries(c.req.raw.headers.entries())
+    }
+  });
+});
 
 // SEO Routes (serve directly without /api prefix)
 app.route('/', sitemap);

@@ -1,16 +1,17 @@
 {
-  "name": "Snippets Library - Code Snippet Manager",
+  "name": "Snippets Library - Professional Code Snippet Manager",
   "short_name": "Snippets Library",
-  "description": "Discover, share, and organize code snippets with the developer community.",
+  "description": "The ultimate code snippet manager for developers. Organize, share, and discover code snippets with beautiful syntax highlighting, GitHub integration, and powerful search features. Perfect for teams and individual developers.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#3b82f6",
   "background_color": "#ffffff",
   "orientation": "portrait-primary",
-  "categories": ["productivity", "developer tools", "utilities"],
+  "categories": ["productivity", "developer tools", "utilities", "education"],
   "lang": "en",
   "dir": "ltr",
+
   "icons": [
     {
       "src": "/icons/android-icon-72x72.png",

@@ -12,6 +12,7 @@ import { ShareDialog } from '../components/ShareDialog';
 import { api } from '../lib/api';
 import toast from 'react-hot-toast';
 import type { Snippet } from 'shared';
+import { SEOHead } from '../components/SEOHead';
 
 export function SnippetDetail() {
   const { id } = useParams<{ id: string }>();
@@ -87,6 +88,33 @@ export function SnippetDetail() {
     });
   };
 
+  // Generate SEO data for snippet detail
+  const generateSEOData = () => {
+    if (!snippet) return {};
+
+    const codeLines = snippet.code.split('\n').length;
+    const readTime = Math.max(1, Math.ceil(codeLines / 10));
+
+    return {
+      title: `${snippet.title} - ${snippet.language.toUpperCase()} Code Snippet`,
+      description: snippet.description || `A ${snippet.language} code snippet with ${codeLines} lines of code. Perfect for developers and programmers.`,
+      keywords: `${snippet.language}, ${snippet.language} code, code snippet, programming, developer, ${snippet.tags?.join(', ') || ''}`,
+      type: 'article' as const,
+      codeLanguage: snippet.language,
+      category: 'Programming',
+      tags: snippet.tags || [],
+      readTime,
+      noIndex: !snippet.isPublic, // Only index public snippets
+      breadcrumbs: [
+        { name: 'Home', url: `${window.location.origin}/` },
+        { name: 'Dashboard', url: `${window.location.origin}/dashboard` },
+        { name: snippet.title, url: `${window.location.origin}/snippet/${id}` }
+      ]
+    };
+  };
+
+  const seoData = generateSEOData();
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -114,6 +142,8 @@ export function SnippetDetail() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead {...seoData} />
+
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">

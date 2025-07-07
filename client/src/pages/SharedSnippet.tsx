@@ -49,30 +49,43 @@ export function SharedSnippet() {
     const baseDescription = snippet.description || 'A shared code snippet';
     const author = snippet.user?.username || 'Anonymous';
     const language = snippet.language;
+    const codeLines = snippet.code.split('\n').length;
+    const readTime = Math.max(1, Math.ceil(codeLines / 10)); // Estimate reading time
 
-    // Use snippet's SEO fields first, then user's, then fallback
+    // Enhanced SEO title
     const seoTitle = snippet.seoTitle
-      || snippet.user?.seoTitle
-      ? `${baseTitle} - ${snippet.seoTitle || snippet.user?.seoTitle}`
-      : `${baseTitle} - Code Snippet by ${author}`;
+      ? `${baseTitle} - ${snippet.seoTitle}`
+      : `${baseTitle} - ${language.toUpperCase()} Code Snippet by ${author} | Snippets Library`;
 
-    const seoDescription = snippet.seoDescription
-      || snippet.user?.seoDescription
-      ? `${baseDescription} - ${snippet.seoDescription || snippet.user?.seoDescription}`
-      : `${baseDescription} - A ${language} code snippet shared by ${author} on Snippets Library`;
+    // Enhanced SEO description
+    let seoDescription = snippet.seoDescription || baseDescription;
+    if (!snippet.seoDescription) {
+      seoDescription = `${baseDescription} - A ${language} code snippet with ${codeLines} lines of code, shared by ${author}. Features syntax highlighting, easy copying, and clean formatting. Perfect for developers and programmers.`;
+    }
 
-    const seoKeywords = [
+    // Enhanced keywords
+    const keywordArray = [
       language,
+      `${language} code`,
+      `${language} snippet`,
+      `${language} example`,
       'code snippet',
       'programming',
       'developer',
+      'software development',
+      'coding',
+      'source code',
+      'code sharing',
+      'development tools',
       ...(snippet.tags || []),
       ...(snippet.seoKeywords ? snippet.seoKeywords.split(',').map(k => k.trim()) : []),
       ...(snippet.user?.seoKeywords ? snippet.user.seoKeywords.split(',').map(k => k.trim()) : [])
-    ].filter(Boolean).join(', ');
+    ];
 
-    const seoImage = snippet.seoImageUrl || snippet.user?.seoImageUrl || snippet.user?.avatarUrl || undefined;
-    const twitterHandle = snippet.user?.socialLinks?.twitter ? `@${snippet.user.socialLinks.twitter.split('/').pop()}` : undefined;
+    const seoKeywords = [...new Set(keywordArray)].filter(Boolean).join(', ');
+
+    const seoImage = snippet.seoImageUrl || snippet.user?.seoImageUrl || snippet.user?.avatarUrl || `${window.location.origin}/icons/web-app-manifest-512x512.png`;
+    const twitterHandle = snippet.user?.socialLinks?.twitter ? `@${snippet.user.socialLinks.twitter.split('/').pop()}` : '@snippetslibrary';
 
     return {
       title: seoTitle,
@@ -83,7 +96,16 @@ export function SharedSnippet() {
       twitterHandle,
       publishedTime: snippet.createdAt.toString(),
       modifiedTime: snippet.updatedAt.toString(),
-      type: 'article' as const
+      type: 'article' as const,
+      codeLanguage: language,
+      category: 'Programming',
+      tags: snippet.tags || [],
+      readTime,
+      breadcrumbs: [
+        { name: 'Home', url: `${window.location.origin}/` },
+        { name: 'Shared Snippets', url: `${window.location.origin}/share` },
+        { name: snippet.title, url: `${window.location.origin}/share/${shareId}` }
+      ]
     };
   };
 

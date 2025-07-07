@@ -70,13 +70,28 @@ auth.get('/callback', async (c) => {
 
 // Get current user
 auth.get('/me', authMiddleware, async (c) => {
-  const session = c.get('session');
-  
-  return c.json<ApiResponse>({
-    message: 'User retrieved successfully',
-    success: true,
-    data: { user: session.user }
-  });
+  try {
+    const session = c.get('session');
+    
+    if (!session || !session.user) {
+      return c.json<ApiResponse>({
+        message: 'User session not found',
+        success: false
+      }, 401);
+    }
+    
+    return c.json<ApiResponse>({
+      message: 'User retrieved successfully',
+      success: true,
+      data: { user: session.user }
+    });
+  } catch (error) {
+    console.error('Error in /me endpoint:', error);
+    return c.json<ApiResponse>({
+      message: 'Failed to retrieve user',
+      success: false
+    }, 500);
+  }
 });
 
 // Logout
