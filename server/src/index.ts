@@ -1,0 +1,91 @@
+import 'dotenv/config';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import auth from './routes/auth';
+import snippets from './routes/snippets';
+import sitemap from './routes/sitemap';
+import type { ApiResponse } from 'shared';
+
+// Validate required environment variables
+const requiredEnvVars = ['DATABASE_URL', 'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingEnvVars);
+  console.error('Please check your .env file and ensure all variables are set properly.');
+  process.exit(1);
+}
+
+// Set default values for optional env vars
+process.env.FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+console.log('✅ All required environment variables are loaded');
+console.log('🌐 Frontend URL:', process.env.FRONTEND_URL);
+
+const app = new Hono();
+
+// Middleware
+app.use('*', logger());
+app.use('*', cors({
+  origin: (origin) => {
+    // Allow requests from any localhost port in development
+    if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return origin;
+    }
+    // Add your production domains here
+    const allowedOrigins = [
+      'https://snippetslibrary.com',
+      'https://www.snippetslibrary.com'
+    ];
+    return allowedOrigins.includes(origin) ? origin : null;
+  },
+  credentials: true,
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Health check
+app.get('/', (c) => {
+  return c.json<ApiResponse>({
+    message: 'Snippet Library API is running!',
+    success: true,
+    data: {
+      version: '1.0.0',
+      timestamp: new Date().toISOString()
+    }
+  });
+});
+
+// API Routes
+app.route('/api/auth', auth);
+app.route('/api/snippets', snippets);
+
+// SEO Routes (serve directly without /api prefix)
+app.route('/', sitemap);
+
+// 404 handler
+app.notFound((c) => {
+  return c.json<ApiResponse>({
+    message: 'Route not found',
+    success: false
+  }, 404);
+});
+
+// Error handler
+app.onError((err, c) => {
+  console.error('Server error:', err);
+  return c.json<ApiResponse>({
+    message: 'Internal server error',
+    success: false
+  }, 500);
+});
+
+const port = Number(process.env.PORT) || 3000;
+
+console.log(`🚀 Server running on port ${port}`);
+
+export default {
+  port,
+  fetch: app.fetch,
+};
