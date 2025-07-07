@@ -1,5 +1,5 @@
 {
-  "name": "snippets-library-server",
+  "name": "server",
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,6 +8,11 @@
     "dev": "bun --watch run src/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun run src/migrate.ts",
+    "db:seed": "bun run src/seed.ts",
+    "db:seed:quick": "bun run src/seeder.ts quick",
+    "db:seed:clear": "bun run src/seeder.ts clear",
+    "db:seed:stats": "bun run src/seeder.ts stats",
+    "db:seed:first-user": "bun run src/seeder.ts first-user",
     "db:studio": "drizzle-kit studio",
     "deploy": "wrangler deploy --minify",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"

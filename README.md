@@ -374,9 +374,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- Create an [issue](https://github.com/yourusername/snippets-library/issues) for bug reports
-- Start a [discussion](https://github.com/yourusername/snippets-library/discussions) for questions
-- Check the [wiki](https://github.com/yourusername/snippets-library/wiki) for documentation
+- Create an [issue](https://github.com/cojocaru-david/snippetslibrary.com/issues) for bug reports
+- Start a [discussion](https://github.com/cojocaru-david/snippetslibrary.com/discussions) for questions
 
 ---
 
