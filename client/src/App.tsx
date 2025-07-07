@@ -94,7 +94,7 @@ function App() {
       <UserSettingsProvider>
         <ThemeProvider>
           <Router>
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen bg-background" suppressHydrationWarning>
               <AppRoutes />
               <Toaster 
                 position="top-right"

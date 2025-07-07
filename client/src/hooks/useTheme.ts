@@ -25,6 +25,9 @@ export function useTheme() {
   }, [hexToRgb]);
 
   useEffect(() => {
+    // Only run on client side to avoid SSR issues
+    if (typeof window === 'undefined') return;
+    
     const root = window.document.documentElement;
     
     const applyTheme = (theme: 'light' | 'dark' | 'system') => {
