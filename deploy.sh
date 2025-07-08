@@ -1,26 +1,68 @@
 #!/bin/bash
-DEPLOY_DIR="/var/www/snippetslibrary"
-cd $DEPLOY_DIR
 
-# Ensure bun is in PATH
+# Exit on error, undefined var, or pipefail
+set -euo pipefail
+
+DEPLOY_DIR="/var/www/snippetslibrary"
+ENV_FILE="$HOME/.env"
+SERVER_ENV="$DEPLOY_DIR/server/.env"
+APP_NAME="snippetslibrary"
+
+# Colors for logging
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+log() {
+  echo -e "${CYAN}[INFO]${NC} $1"
+}
+
+error() {
+  echo -e "${RED}[ERROR]${NC} $1"
+  exit 1
+}
+
+success() {
+  echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+# Go to the project directory
+log "Switching to project directory: $DEPLOY_DIR"
+cd "$DEPLOY_DIR" || error "Failed to cd into $DEPLOY_DIR"
+
+# Add bun to path
 export PATH="$HOME/.bun/bin:/usr/local/bin:$PATH"
 
-# Verify bun is available
+# Check if bun is available
 if ! command -v bun &> /dev/null; then
-  echo "Error: bun is not installed or not in PATH"
-  exit 1
+  error "bun is not installed or not in PATH"
 fi
 
 # Copy environment variables
-echo "Copying environment variables..."
-if [ ! -f ~/.env ]; then
-  echo "Error: .env file not found in home directory"
-  exit 1
+log "Copying environment variables..."
+if [[ ! -f "$ENV_FILE" ]]; then
+  error ".env file not found in home directory"
 fi
-cp ~/.env /var/www/snippetslibrary/server/.env
+cp "$ENV_FILE" "$SERVER_ENV"
+success "Environment file copied."
 
-# Install dependencies and build the project
-echo "Installing dependencies and building the project..."
+# Install deps and build
+log "Installing dependencies..."
 bun install
+
+log "Building the project..."
 bun run build
-pm2 restart snippetslibrary || pm2 start "bun run start:prod" --name snippetslibrary
+success "Build complete."
+
+# Restart or start with PM2
+log "Restarting app with PM2..."
+if pm2 list | grep -q "$APP_NAME"; then
+  pm2 restart "$APP_NAME"
+  success "App restarted with PM2."
+else
+  pm2 start "bun run start:prod" --name "$APP_NAME"
+  success "App started with PM2."
+fi
+
+log "🎉 Deployment complete."
