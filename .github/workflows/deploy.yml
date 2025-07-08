@@ -10,25 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout code
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: 🔐 Set up SSH
+    - name: Set up SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+        ssh-keyscan -p ${{ secrets.VPS_PORT || 22 }} -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
         chmod 600 ~/.ssh/known_hosts
 
-    - name: 🧪 Test SSH connection
+    - name: Test SSH connection
       run: |
-        ssh -p "${{ secrets.VPS_PORT }}" -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo SSH connection successful"
+        ssh -p ${{ secrets.VPS_PORT || 22 }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo SSH connection successful"
 
-    - name: 📦 Copy full project to VPS via rsync
+    - name: Copy full project to VPS
       run: |
-        rsync -az --delete -e "ssh -p ${{ secrets.VPS_PORT }} -i ~/.ssh/id_rsa" ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/snippetslibrary/
+        rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT || 22 }} -i ~/.ssh/id_rsa" ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/snippetslibrary/
 
-    - name: 🚀 Execute deployment script on VPS
+    - name: Execute deployment script on VPS
       run: |
-        ssh -p "${{ secrets.VPS_PORT }}" -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "bash /var/www/snippetslibrary/deploy.sh"
+        ssh -p ${{ secrets.VPS_PORT || 22 }} -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "bash /var/www/snippetslibrary/deploy.sh"
