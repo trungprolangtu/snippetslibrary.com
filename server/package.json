@@ -5,6 +5,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "start:prod": "bun run dist/index.js",
     "dev": "bun --watch run src/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun run src/migrate.ts",
@@ -13,9 +14,7 @@
     "db:seed:clear": "bun run src/seeder.ts clear",
     "db:seed:stats": "bun run src/seeder.ts stats",
     "db:seed:first-user": "bun run src/seeder.ts first-user",
-    "db:studio": "drizzle-kit studio",
-    "deploy": "wrangler deploy --minify",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "hono": "^4.7.11",

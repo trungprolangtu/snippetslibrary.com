@@ -27,6 +27,7 @@
     "build:client": "cd client && bun run build",
     "build:shared": "cd shared && bun run build",
     "build:server": "cd server && bun run build",
+    "start:prod": "cd server && bun run start:prod",
     "build": "bun run build:shared && bun run build:server && bun run build:client",
     "deploy:server": "cd server && bun run deploy",
     "postinstall": "bun run build:shared && bun run build:server",

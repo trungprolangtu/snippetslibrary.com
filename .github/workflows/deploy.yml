@@ -1,4 +1,4 @@
-name: Deploy Server to VPS
+name: Deploy Full Project to VPS
 
 on:
   push:
@@ -25,9 +25,9 @@ jobs:
       run: |
         ssh -p ${{ secrets.VPS_PORT || 22 }} -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo SSH connection successful"
 
-    - name: Copy server directory to VPS
+    - name: Copy full project to VPS
       run: |
-        rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT || 22 }} -i ~/.ssh/id_rsa" ./server/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/snippetslibrary/server
+        rsync -avz --delete -e "ssh -p ${{ secrets.VPS_PORT || 22 }} -i ~/.ssh/id_rsa" ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/snippetslibrary/
 
     - name: Execute deployment script on VPS
       run: |
