@@ -11,6 +11,8 @@ if ! command -v bun &> /dev/null; then
   exit 1
 fi
 
+# Install dependencies and build the project
+echo "Installing dependencies and building the project..."
 bun install
 bun run build
 pm2 restart snippetslibrary || pm2 start "bun run start:prod" --name snippetslibrary
