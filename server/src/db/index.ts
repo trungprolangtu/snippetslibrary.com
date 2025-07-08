@@ -1,12 +1,16 @@
 import { drizzle } from 'drizzle-orm/neon-serverless';
-import { Pool } from '@neondatabase/serverless';
+import { neonConfig } from '@neondatabase/serverless';
 import * as schema from './schema';
 
-// Database connection
-const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-});
+// Configure Neon for Cloudflare Workers
+neonConfig.fetchConnectionCache = true;
 
-export const db = drizzle(pool, { schema });
+// Create database connection function that creates a fresh connection each time
+export function createDb() {
+  return drizzle(process.env.DATABASE_URL!, { schema });
+}
+
+// For compatibility, also export db but recommend using createDb() in handlers
+export const db = createDb();
 
 export type DbType = typeof db;

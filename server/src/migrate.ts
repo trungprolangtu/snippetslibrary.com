@@ -1,14 +1,13 @@
 import 'dotenv/config';
 import { migrate } from 'drizzle-orm/neon-serverless/migrator';
-import { Pool } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
+import { neonConfig } from '@neondatabase/serverless';
 
 const runMigrations = async () => {
-  const pool = new Pool({ 
-    connectionString: process.env.DATABASE_URL,
-  });
+  // Configure Neon for serverless
+  neonConfig.fetchConnectionCache = true;
   
-  const db = drizzle(pool);
+  const db = drizzle(process.env.DATABASE_URL!);
   
   console.log('⏳ Running migrations...');
   
