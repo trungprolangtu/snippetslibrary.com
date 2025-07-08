@@ -1,15 +1,24 @@
 {
   "name": "snippets-library",
   "version": "0.3.1",
-  "description": "A modern, full-stack code snippet manager for developers",
   "author": "Steve Simkins",
-  "license": "MIT",
+  "devDependencies": {
+    "bun-types": "latest",
+    "concurrently": "^9.1.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "description": "A modern, full-stack code snippet manager for developers",
   "homepage": "https://snippetslibrary.com",
-  "workspaces": [
-    "./server",
-    "./client",
-    "./shared"
+  "keywords": [
+    "bun",
+    "hono",
+    "react",
+    "vite",
+    "monorepo"
   ],
+  "license": "MIT",
   "scripts": {
     "dev:client": "cd client && bun run dev",
     "dev:server": "cd server && bun run dev",
@@ -23,18 +32,9 @@
     "postinstall": "bun run build:shared && bun run build:server",
     "preview:client": "cd client && bun run preview"
   },
-  "keywords": [
-    "bun",
-    "hono",
-    "react",
-    "vite",
-    "monorepo"
-  ],
-  "devDependencies": {
-    "bun-types": "latest",
-    "concurrently": "^9.1.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.7.3"
-  }
+  "workspaces": [
+    "./server",
+    "./client",
+    "./shared"
+  ]
 }

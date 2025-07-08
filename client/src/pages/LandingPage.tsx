@@ -11,8 +11,8 @@ import {
   Search,
   Share2,
   ChevronRight,
-  Globe,
   Database,
+  StarIcon,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
@@ -101,9 +101,9 @@ export function LandingPage() {
     keywords: 'code snippets, code manager, developer tools, programming, syntax highlighting, GitHub, code sharing, developer productivity, code organization, snippet library, programming languages, code examples, development tools, open source',
     image: `${window.location.origin}/icons/web-app-manifest-512x512.png`,
     type: 'website' as const,
-    author: 'Snippets Library Team',
+    author: 'Cojocaru David',
     siteName: 'Snippets Library',
-    twitterHandle: '@snippetslibrary',
+    twitterHandle: '@cojocarudavidme',
     category: 'Developer Tools',
     tags: ['code snippets', 'developer tools', 'programming', 'GitHub', 'syntax highlighting', 'productivity'],
     breadcrumbs: [
@@ -156,12 +156,12 @@ export function LandingPage() {
               className="inline-flex items-center gap-2 px-4 py-2 text-sm"
             >
               <Sparkles className="h-4 w-4" />
-              New: AI-powered code search is here
+              We are in beta!
             </Badge>
 
             {/* Main Headline */}
             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-              Organize, Secure, and Share
+              Snippets Library - Organize, Share & Discover
               <br />
               Your Code Snippets
             </h1>
@@ -190,9 +190,10 @@ export function LandingPage() {
                 size="lg"
                 variant="outline"
                 className="group px-8 py-6 text-lg border-2 hover:bg-muted/50"
+                onClick={() => window.open("https://github.com/cojocaru-david/snippetslibrary.com", "_blank")}
               >
-                <Globe className="h-5 w-5" />
-                <span>View Demo</span>
+                <StarIcon className="h-5 w-5" />
+                <span>Star on GitHub</span>
                 <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
@@ -328,6 +329,65 @@ export function useLocalStorage(key: string, initialValue: any) {
           </div>
         </section>
 
+        {/* Why Choose Section */}
+        <section className="py-20">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold">
+              Why Organizing Code Snippets Saves Time
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Discover how proper code organization can boost your development productivity 
+              and streamline your workflow with our modern snippet manager.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto space-y-12">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold">Instant Code Retrieval</h3>
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  Stop wasting time searching through old projects or scrolling through chat history. 
+                  With SnippetsLibrary, your code snippets are organized, tagged, and searchable, 
+                  making it easy to find exactly what you need in seconds.
+                </p>
+              </div>
+              <Card className="p-6 bg-primary/5 border-primary/20">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Search className="h-5 w-5 text-primary" />
+                    <span className="font-medium">Search: "React hooks"</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    ✅ 23 results found in 0.01s
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <Card className="p-6 bg-primary/5 border-primary/20 md:order-first">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    <span className="font-medium">Team Collaboration</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Share knowledge across your development team
+                  </div>
+                </div>
+              </Card>
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold">Enhanced Team Productivity</h3>
+                <p className="text-muted-foreground text-lg leading-relaxed">
+                  Build a shared knowledge base with your team. When developers can easily share 
+                  and discover proven code solutions, the entire team becomes more productive 
+                  and maintains consistent coding standards.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="py-20">
           <Card className="relative overflow-hidden border-2 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
@@ -372,19 +432,6 @@ export function useLocalStorage(key: string, initialValue: any) {
               &copy; 2025 Snippets Library. Built with ❤️ for developers
               worldwide.
             </p>
-            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-primary transition-colors">
-                Privacy
-              </a>
-              <span>•</span>
-              <a href="#" className="hover:text-primary transition-colors">
-                Terms
-              </a>
-              <span>•</span>
-              <a href="#" className="hover:text-primary transition-colors">
-                Support
-              </a>
-            </div>
           </div>
         </footer>
       </div>

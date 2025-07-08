@@ -16,11 +16,13 @@ const AccountSettings = lazy(() => import('./pages/AccountSettings').then(module
 // Preload components that users are likely to need
 const preloadComponents = () => {
   if (typeof window !== 'undefined') {
-    // Preload components after a short delay to not block initial render
-    setTimeout(() => {
+    // Use requestIdleCallback to avoid blocking main thread
+    const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+    idleCallback(() => {
+      // Preload components during idle time
       import('./components/CodeBlock');
       import('./components/SyntaxHighlighter');
-    }, 2000);
+    });
   }
 };
 

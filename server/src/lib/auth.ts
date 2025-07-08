@@ -10,7 +10,7 @@ import type { User, AuthSession } from 'shared';
 export const github = new GitHub(
   process.env.GITHUB_CLIENT_ID!,
   process.env.GITHUB_CLIENT_SECRET!,
-  process.env.GITHUB_REDIRECT_URI || 'http://localhost:3000/auth/callback'
+  process.env.GITHUB_REDIRECT_URI || 'http://localhost:3001/auth/callback'
 );
 
 // JWT secret
