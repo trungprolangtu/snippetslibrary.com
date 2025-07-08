@@ -52,7 +52,7 @@ log "Installing dependencies..."
 bun install
 
 log "Building the project..."
-bun run build
+bun run build:server
 success "Build complete."
 
 # Restart or start with PM2
