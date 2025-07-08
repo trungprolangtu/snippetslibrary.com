@@ -11,6 +11,14 @@ if ! command -v bun &> /dev/null; then
   exit 1
 fi
 
+# Copy environment variables
+echo "Copying environment variables..."
+if [ ! -f ~/.env ]; then
+  echo "Error: .env file not found in home directory"
+  exit 1
+fi
+cp ~/.env /var/www/snippetslibrary/server/.env
+
 # Install dependencies and build the project
 echo "Installing dependencies and building the project..."
 bun install
