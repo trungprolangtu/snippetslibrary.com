@@ -74,10 +74,12 @@ if sudo -u "$DEPLOY_USER" bash -lc 'command -v bun' &>/dev/null; then
   success "Bun already installed."
 else
   log "Installing Bun runtime…"
-  sudo -u "$DEPLOY_USER" curl -fsSL https://bun.sh/install | bash
+  sudo -u "$DEPLOY_USER" bash -c "curl -fsSL https://bun.sh/install | bash"
+  echo 'export PATH="$HOME/.bun/bin:$PATH"' >> "$HOME_DIR/.bashrc"
   echo 'export PATH="$HOME/.bun/bin:$PATH"' > /etc/profile.d/bun.sh
   chmod +x /etc/profile.d/bun.sh
-  success "Bun installed."
+  chown "$DEPLOY_USER":"$DEPLOY_USER" "$HOME_DIR/.bashrc"
+  success "Bun installed and PATH configured."
 fi
 
 # 7) Node.js & PM2 (idempotent)
@@ -121,4 +123,4 @@ echo -e "  • ${CYAN}VPS_SSH_KEY${NC} = contents of ${KEY_PATH}\n"
 echo -e "And make sure your deploy user can SSH back in:"
 echo -e "  cat ${KEY_PATH}.pub >> ${HOME_DIR}/.ssh/authorized_keys\n"
 echo -e "Commit your workflow.yml and enjoy automated deploys! 🚀"
-echo -e "\n${CYAN}Remember to run 'source /etc/profile.d/bun.sh' to update your PATH.${NC}\n"
+echo -e "\n${CYAN}Remember to run 'source /etc/profile.d/bun.sh' or restart your shell to apply Bun PATH changes.${NC}\n"
