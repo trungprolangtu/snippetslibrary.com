@@ -60,7 +60,7 @@ export function SharedSnippet() {
       ? `${baseTitle} - ${userSeoSettings.seoTitle}`
       : snippet.seoTitle
         ? `${baseTitle} - ${snippet.seoTitle}`
-        : `${baseTitle} - ${language.toUpperCase()} Code Snippet by ${author} | Snippets Library`;
+        : `${baseTitle} - ${language.toUpperCase()} Code Snippet by ${author} on Snippets Library`;
 
     let seoDescription = userSeoSettings.seoDescription?.trim()
       ? userSeoSettings.seoDescription

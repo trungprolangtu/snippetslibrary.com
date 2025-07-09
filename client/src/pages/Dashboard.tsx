@@ -16,6 +16,7 @@ import { useDebounce } from 'use-debounce';
 import toast from 'react-hot-toast';
 import type { Snippet } from 'shared';
 import { useAuthActions } from '../hooks/useAuthActions';
+import { SEOHead } from '../components/SEOHeadSSR';
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -95,8 +96,27 @@ export function Dashboard() {
     return matchesSearch && matchesLanguage && matchesVisibility;
   });
 
+  // SEO Configuration
+  const seoConfig = {
+    title: `Dashboard - ${user?.username || 'User'}`,
+    description: `Manage your code snippets collection. Create, organize, and share code snippets with syntax highlighting. View all your ${snippets.length} snippets in one place.`,
+    keywords: `code snippets, dashboard, manage snippets, code organization, ${user?.username}, programming, developer tools, code manager`,
+    type: 'website' as const,
+    author: user?.username || 'Snippets Library User',
+    siteName: 'Snippets Library',
+    twitterHandle: '@cojocarudavidme',
+    category: 'Developer Tools',
+    tags: ['dashboard', 'code snippets', 'developer tools', 'programming', 'code organization'],
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Dashboard', url: '/dashboard' }
+    ]
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      <SEOHead {...seoConfig} />
+      <div className="min-h-screen bg-background">
       {/* Enhanced Responsive Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="container mx-auto px-4">
@@ -532,5 +552,6 @@ export function Dashboard() {
         )}
       </div>
     </div>
+    </>
   );
 }

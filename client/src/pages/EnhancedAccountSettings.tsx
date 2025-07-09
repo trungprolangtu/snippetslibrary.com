@@ -55,6 +55,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useUserSettings } from "../hooks/useUserSettings";
 import { api } from "../lib/api";
 import toast from "react-hot-toast";
+import { SEOHead } from "../components/SEOHeadSSR";
 
 // Available Shiki themes
 const SHIKI_THEMES = [
@@ -223,9 +224,29 @@ export function EnhancedAccountSettings() {
     });
   };
 
+  // SEO Configuration
+  const seoConfig = {
+    title: `Account Settings - ${user?.username || 'User'}`,
+    description: `Manage your Snippets Library account settings. Customize your profile, update preferences, manage social links, and configure privacy settings for your code snippets.`,
+    keywords: `account settings, profile settings, user preferences, ${user?.username}, snippets library, code snippets, profile customization, privacy settings`,
+    type: 'website' as const,
+    author: user?.username || 'Snippets Library User',
+    siteName: 'Snippets Library',
+    twitterHandle: '@cojocarudavidme',
+    category: 'Developer Tools',
+    tags: ['account settings', 'profile', 'user preferences', 'privacy', 'customization'],
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Dashboard', url: '/dashboard' },
+      { name: 'Account Settings', url: '/account-settings' }
+    ]
+  };
+
   // Utility functions for slug generation and validation
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <>
+      <SEOHead {...seoConfig} />
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Enhanced Header */}
       <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
         <div className="container mx-auto px-4 py-4">
@@ -892,5 +913,6 @@ export function EnhancedAccountSettings() {
         </div>
       </div>
     </div>
+    </>
   );
 }
