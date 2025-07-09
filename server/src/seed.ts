@@ -1,6 +1,5 @@
 import { db } from './db';
 import { users, snippets } from './db/schema';
-import { nanoid } from 'nanoid';
 import { randomUUID } from 'crypto';
 
 // Sample users data with SEO configurations

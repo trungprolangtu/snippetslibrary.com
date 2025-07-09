@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { db } from '../db';
 import { snippets, users } from '../db/schema';
 import { authMiddleware, optionalAuthMiddleware, type Variables } from '../lib/middleware';
-import { enhancedValidationSchemas, sanitizeInput } from '../lib/validation';
+import { enhancedValidationSchemas } from '../lib/validation';
 import type { ApiResponse } from 'shared';
 
 const snippetsRouter = new Hono<{ Variables: Partial<Variables> }>();
@@ -503,7 +503,6 @@ snippetsRouter.delete('/:id/share', authMiddleware, async (c) => {
 // Get snippet by share ID
 snippetsRouter.get('/share/:shareId', optionalAuthMiddleware, async (c) => {
   const shareId = c.req.param('shareId');
-  const session = c.get('session');
 
   // Basic shareId validation
   if (!shareId || typeof shareId !== 'string' || shareId.length < 1 || shareId.length > 100) {
