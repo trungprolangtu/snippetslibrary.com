@@ -29,6 +29,13 @@
       "when": 1751920631017,
       "tag": "0003_lowly_ozymandias",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1752020925103,
+      "tag": "0004_lethal_ghost_rider",
+      "breakpoints": true
     }
   ]
 }
