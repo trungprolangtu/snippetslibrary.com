@@ -32,7 +32,8 @@ export function SnippetDetail() {
         const data = await api.snippets.getById(id!);
         setSnippet(data.snippet);
       } catch (err) {
-        setError('Snippet not found');
+        const message = err instanceof Error ? err.message : 'Snippet not found';
+        setError(message);
         console.error('Error fetching snippet:', err);
       } finally {
         setLoading(false);
@@ -50,8 +51,9 @@ export function SnippetDetail() {
     try {
       await navigator.clipboard.writeText(snippet.code);
       toast.success('Code copied to clipboard!');
-    } catch {
-      toast.error('Failed to copy code');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to copy code';
+      toast.error(message);
     }
   };
 

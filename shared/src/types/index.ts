@@ -145,3 +145,18 @@ export interface ValidationRule {
   test: (value: string) => boolean;
   message: string;
 }
+
+export interface updateProfileRequest {
+  username?: string;
+  codeTheme?: string;
+  uiTheme?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
+  seoImageUrl?: string;
+  socialLinks?: Record<string, string>;
+  customDomain?: string;
+  isProfilePublic?: boolean;
+  emailNotifications?: boolean;
+  enableAnalytics?: boolean;
+}

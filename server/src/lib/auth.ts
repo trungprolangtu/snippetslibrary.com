@@ -13,13 +13,23 @@ export const github = new GitHub(
   process.env.GITHUB_REDIRECT_URI || 'http://localhost:3001/auth/callback'
 );
 
-// JWT secret
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'your-secret-key');
+// JWT secret - fail if not provided in production
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET is required but not set');
+  process.exit(1);
+}
 
-// Create session
+if (process.env.NODE_ENV === 'production' && process.env.JWT_SECRET === 'your-secret-key') {
+  console.error('❌ Using default JWT_SECRET in production is not allowed');
+  process.exit(1);
+}
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+
+// Create session with shorter expiration and rotation
 export async function createSession(userId: string, accessToken: string): Promise<string> {
   const sessionId = nanoid();
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days instead of 30
 
   await db.insert(sessions).values({
     id: sessionId,
@@ -31,12 +41,38 @@ export async function createSession(userId: string, accessToken: string): Promis
   return sessionId;
 }
 
-// Create JWT token
+// Rotate session for security
+export async function rotateSession(oldSessionId: string): Promise<string | null> {
+  const oldSession = await db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.id, oldSessionId))
+    .limit(1);
+
+  if (!oldSession.length) return null;
+
+  const session = oldSession[0]!;
+  
+  // Create new session
+  const newSessionId = await createSession(session.userId, session.accessToken);
+  
+  // Delete old session
+  await db.delete(sessions).where(eq(sessions.id, oldSessionId));
+  
+  return newSessionId;
+}
+
+// Invalidate all user sessions (for security events)
+export async function invalidateAllUserSessions(userId: string): Promise<void> {
+  await db.delete(sessions).where(eq(sessions.userId, userId));
+}
+
+// Create JWT token with shorter expiration
 export async function createJWT(sessionId: string): Promise<string> {
   return new SignJWT({ sessionId })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('30d')
+    .setExpirationTime('7d') // 7 days instead of 30
     .sign(JWT_SECRET);
 }
 

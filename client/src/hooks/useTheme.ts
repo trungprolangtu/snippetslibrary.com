@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from 'react';
-import { useUserSettings } from '../contexts/UserSettingsContext';
+import { useEffect, useCallback, useMemo } from 'react';
+import { useUserSettings } from './useUserSettings';
 import { useAuth } from '../contexts/AuthContext';
 
 export function useTheme() {
@@ -24,6 +24,15 @@ export function useTheme() {
     return brightness > 128 ? '#000000' : '#ffffff';
   }, [hexToRgb]);
 
+  // Memoize the effective theme and branding color to avoid unnecessary recalculations
+  const effectiveTheme = useMemo(() => {
+    return (user?.uiTheme || settings.uiTheme) as 'light' | 'dark' | 'system';
+  }, [user?.uiTheme, settings.uiTheme]);
+
+  const brandingColor = useMemo(() => {
+    return user?.customBrandingColor || settings.customBrandingColor;
+  }, [user?.customBrandingColor, settings.customBrandingColor]);
+
   useEffect(() => {
     // Only run on client side to avoid SSR issues
     if (typeof window === 'undefined') return;
@@ -41,15 +50,17 @@ export function useTheme() {
       }
     };
 
-    // Apply theme from user settings (server-side) or local settings
-    const effectiveTheme = (user?.uiTheme || settings.uiTheme) as 'light' | 'dark' | 'system';
+    // Apply theme
     applyTheme(effectiveTheme);
 
     // Apply custom branding color if available
-    const brandingColor = user?.customBrandingColor || settings.customBrandingColor;
     if (brandingColor && brandingColor !== '#3b82f6') {
       root.style.setProperty('--primary', brandingColor);
       root.style.setProperty('--primary-foreground', getContrastColor(brandingColor));
+    } else {
+      // Reset to default
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--primary-foreground');
     }
 
     // Listen for system theme changes when using system theme
@@ -60,14 +71,14 @@ export function useTheme() {
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
-  }, [settings.uiTheme, settings.customBrandingColor, user?.uiTheme, user?.customBrandingColor, getContrastColor]);
+  }, [effectiveTheme, brandingColor, getContrastColor]);
 
-  const setTheme = (theme: 'light' | 'dark' | 'system') => {
+  const setTheme = useCallback((theme: 'light' | 'dark' | 'system') => {
     updateSettings({ uiTheme: theme });
-  };
+  }, [updateSettings]);
 
   return {
-    theme: user?.uiTheme || settings.uiTheme,
+    theme: effectiveTheme,
     setTheme,
   };
 }

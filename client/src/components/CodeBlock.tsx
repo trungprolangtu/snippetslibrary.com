@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { createHighlighter, type Highlighter, type BundledLanguage, type BundledTheme } from 'shiki';
 import { Copy, Check, Download, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from './ui/button';
-import { useUserSettings } from '../contexts/UserSettingsContext';
+import { useUserSettings } from '../hooks/useUserSettings';
 import { cn } from '../lib/utils';
+import { shikiService } from '../lib/shiki';
 import toast from 'react-hot-toast';
+import DOMPurify from 'dompurify';
 
 interface CodeBlockProps {
   code: string;
@@ -18,71 +19,8 @@ interface CodeBlockProps {
   lineNumbers?: boolean;
   rounded?: boolean;
   title?: string;
+  hideScroll?: boolean;
 }
-
-// Create a mapping for language aliases and ensure we have fallbacks
-const getLanguageForShiki = (language: string): string => {
-  // Common language mappings for Shiki
-  const languageMap: Record<string, string> = {
-    'javascript': 'javascript',
-    'typescript': 'typescript',
-    'python': 'python',
-    'java': 'java',
-    'cpp': 'cpp',
-    'c': 'c',
-    'csharp': 'csharp',
-    'go': 'go',
-    'rust': 'rust',
-    'php': 'php',
-    'ruby': 'ruby',
-    'html': 'html',
-    'css': 'css',
-    'scss': 'scss',
-    'json': 'json',
-    'markdown': 'markdown',
-    'bash': 'bash',
-    'shell': 'bash',
-    'sql': 'sql',
-    'xml': 'xml',
-    'text': 'text',
-    'txt': 'text',
-  };
-  
-  return languageMap[language.toLowerCase()] || 'text';
-};
-
-// Map theme names to valid Shiki themes
-const getValidShikiTheme = (themeName: string): string => {
-  // Theme mapping for commonly used themes
-  const themeMap: Record<string, string> = {
-    'auto': 'github-dark', // fallback
-    'dark-plus': 'dark-plus',
-    'light-plus': 'light-plus',
-    'github-dark': 'github-dark',
-    'github-light': 'github-light',
-    'github-dark-dimmed': 'github-dark-dimmed',
-    'monokai': 'monokai',
-    'dracula': 'dracula',
-    'one-dark-pro': 'one-dark-pro',
-    'one-light': 'one-light',
-    'nord': 'nord',
-    'tokyo-night': 'tokyo-night',
-    'material-theme': 'material-theme',
-    'catppuccin-mocha': 'catppuccin-mocha',
-    'catppuccin-latte': 'catppuccin-latte',
-    'rose-pine': 'rose-pine',
-    'synthwave-84': 'synthwave-84',
-    'poimandres': 'poimandres',
-    'night-owl': 'night-owl',
-    'solarized-dark': 'solarized-dark',
-    'solarized-light': 'solarized-light',
-  };
-  
-  return themeMap[themeName.toLowerCase()] || 'github-dark';
-};
-
-// Create a singleton highlighter instance to avoid recreating it
-let globalHighlighter: Highlighter | null = null;
 
 export function CodeBlock({
   code,
@@ -95,6 +33,7 @@ export function CodeBlock({
   maxHeight,
   rounded = true,
   title,
+  hideScroll = false,
 }: CodeBlockProps) {
   const { getEffectiveCodeTheme } = useUserSettings();
   const [highlightedCode, setHighlightedCode] = useState('');
@@ -116,87 +55,32 @@ export function CodeBlock({
       try {
         setIsLoading(true);
         
-        // Get the correct language identifier for Shiki
-        const shikiLanguage = getLanguageForShiki(language);
+        // Use the shared Shiki service
+        const html = await shikiService.highlight(sanitizedCode, language, activeTheme);
         
-        // Get the valid Shiki theme
-        const validTheme = getValidShikiTheme(activeTheme);
-        
-        // Initialize highlighter if not already done
-        if (!globalHighlighter) {
-          globalHighlighter = await createHighlighter({
-            themes: ['dark-plus', 'light-plus', 'github-dark', 'github-light'], // Load common themes
-            langs: ['javascript', 'typescript', 'python', 'text'], // Load common languages + text fallback
-          });
-        }
-
-        // Check if the language is already loaded
-        const loadedLanguages = globalHighlighter.getLoadedLanguages();
-        
-        if (!loadedLanguages.includes(shikiLanguage)) {
-          // Try to dynamically load the language
-          try {
-            await globalHighlighter.loadLanguage(shikiLanguage as BundledLanguage);
-          } catch (langError) {
-            console.warn(`Failed to load language '${shikiLanguage}', falling back to 'text':`, langError);
-            // If the language fails to load, try to load 'text' as fallback
-            if (!loadedLanguages.includes('text')) {
-              try {
-                await globalHighlighter.loadLanguage('text');
-              } catch (textError) {
-                console.warn('Failed to load text language, using plain text:', textError);
-              }
-            }
-          }
-        }
-
-        // Check if the theme is already loaded
-        const loadedThemes = globalHighlighter.getLoadedThemes();
-        
-        if (!loadedThemes.includes(validTheme)) {
-          try {
-            await globalHighlighter.loadTheme(validTheme as BundledTheme);
-          } catch (themeError) {
-            console.warn(`Failed to load theme '${validTheme}', falling back to default:`, themeError);
-            // Try to load a default theme as fallback
-            if (!loadedThemes.includes('github-dark')) {
-              try {
-                await globalHighlighter.loadTheme('github-dark');
-              } catch (fallbackError) {
-                console.warn('Failed to load fallback theme:', fallbackError);
-              }
-            }
-          }
-        }
-
         if (!cancelled) {
-          // Determine which language to use for highlighting
-          const currentLoadedLanguages = globalHighlighter.getLoadedLanguages();
-          const langToUse = currentLoadedLanguages.includes(shikiLanguage) ? shikiLanguage : 
-                           currentLoadedLanguages.includes('text') ? 'text' : 'txt';
-          
-          // Determine which theme to use for highlighting
-          const currentLoadedThemes = globalHighlighter.getLoadedThemes();
-          const themeToUse = currentLoadedThemes.includes(validTheme) ? validTheme : 
-                            currentLoadedThemes.includes('github-dark') ? 'github-dark' : 
-                            currentLoadedThemes[0] || 'github-dark';
-          
-          const html = globalHighlighter.codeToHtml(sanitizedCode, {
-            lang: langToUse,
-            theme: themeToUse,
+          // Sanitize the HTML output to prevent XSS
+          const sanitizedHtml = DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ['pre', 'code', 'span', 'div'],
+            ALLOWED_ATTR: ['class', 'style', 'data-*'],
+            KEEP_CONTENT: true,
           });
-          setHighlightedCode(html);
+          setHighlightedCode(sanitizedHtml);
           
-          // Extract theme colors from the highlighter
-          const themeData = globalHighlighter.getTheme(themeToUse);
-          const bg = themeData.colors?.['editor.background'] || themeData.bg || '#ffffff';
-          const fg = themeData.colors?.['editor.foreground'] || themeData.fg || '#000000';
-          setThemeColors({ bg, fg });
+          // Get theme colors
+          const colors = await shikiService.getThemeColors(activeTheme);
+          setThemeColors(colors);
         }
       } catch (error) {
         console.error('Error highlighting code:', error);
         if (!cancelled) {
-          setHighlightedCode(`<pre><code>${sanitizedCode}</code></pre>`);
+          // Fallback to plain text with proper escaping
+          const escapeHtml = (text: string) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+          };
+          setHighlightedCode(`<pre><code>${escapeHtml(sanitizedCode)}</code></pre>`);
         }
       } finally {
         if (!cancelled) {
@@ -310,7 +194,15 @@ export function CodeBlock({
             {title}
           </div>
         )}
-        <pre className="text-sm font-mono overflow-auto max-h-full">
+        <pre className={cn(
+          'text-sm',
+          'font-mono',
+          'max-h-full',
+          hideScroll ? 'overflow-hidden' : 'overflow-auto',
+          rounded ? 'rounded-lg' : '',
+          className
+        )} style={{ backgroundColor: themeColors.bg, color: themeColors.fg }
+        }>
           <code>{sanitizedCode}</code>
         </pre>
       </div>

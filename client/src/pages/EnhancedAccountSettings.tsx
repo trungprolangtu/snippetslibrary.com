@@ -52,7 +52,7 @@ import { Badge } from "../components/ui/badge";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { CodeBlock } from "../components/CodeBlock";
 import { useAuth } from "../contexts/AuthContext";
-import { useUserSettings } from "../contexts/UserSettingsContext";
+import { useUserSettings } from "../hooks/useUserSettings";
 import { api } from "../lib/api";
 import toast from "react-hot-toast";
 
@@ -186,7 +186,8 @@ export function EnhancedAccountSettings() {
       toast.success("Settings saved successfully!");
     } catch (error) {
       console.error("Failed to save settings:", error);
-      toast.error("Failed to save settings");
+      const message = error instanceof Error ? error.message : "Failed to save settings";
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }

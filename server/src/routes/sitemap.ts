@@ -51,35 +51,14 @@ sitemapRouter.get('/sitemap.xml', async (c) => {
   
 </urlset>`;
 
-    c.header('Content-Type', 'application/xml');
-    c.header('Cache-Control', 'public, max-age=3600');
-    c.status(200);
-    c.res.headers.set('Content-Type', 'application/xml');
-    return new Response(sitemapXml, { status: 200, headers: { 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=3600' } });
+    return c.body(sitemapXml, 200, {
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=3600',
+    });
   } catch (error) {
     console.error('Sitemap generation error:', error);
     return c.text('Error generating sitemap', 500);
   }
-});
-
-// Generate robots.txt
-sitemapRouter.get('/robots.txt', async (c) => {
-  const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-  
-  const robotsTxt = `User-agent: *
-Allow: /
-Allow: /share/*
-
-Disallow: /dashboard
-Disallow: /settings
-Disallow: /snippet/*
-
-Sitemap: ${baseUrl}/sitemap.xml
-`;
-
-  c.header('Content-Type', 'text/plain');
-  c.header('Cache-Control', 'public, max-age=86400');
-  return c.text(robotsTxt);
 });
 
 export default sitemapRouter;

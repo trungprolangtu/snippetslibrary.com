@@ -9,6 +9,7 @@ import { LanguageBadge } from '../components/LanguageBadge';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SEOHead } from '../components/SEOHead';
 import { useAuth } from '../contexts/AuthContext';
+import { useUserSettings } from '../hooks/useUserSettings';
 import { api } from '../lib/api';
 import toast from 'react-hot-toast';
 import type { Snippet } from 'shared';
@@ -17,6 +18,7 @@ export function SharedSnippet() {
   const { shareId } = useParams<{ shareId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { settings: userSeoSettings } = useUserSettings();
   const [snippet, setSnippet] = useState<Snippet | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,8 @@ export function SharedSnippet() {
         const data = await api.snippets.getByShareId(shareId!);
         setSnippet(data.snippet);
       } catch (err) {
-        setError('Snippet not found or no longer available');
+        const message = err instanceof Error ? err.message : 'Snippet not found or no longer available';
+        setError(message);
         console.error('Error fetching shared snippet:', err);
       } finally {
         setLoading(false);
@@ -52,18 +55,20 @@ export function SharedSnippet() {
     const codeLines = snippet.code.split('\n').length;
     const readTime = Math.max(1, Math.ceil(codeLines / 10)); // Estimate reading time
 
-    // Enhanced SEO title
-    const seoTitle = snippet.seoTitle
-      ? `${baseTitle} - ${snippet.seoTitle}`
-      : `${baseTitle} - ${language.toUpperCase()} Code Snippet by ${author} | Snippets Library`;
+    // Prefer user SEO settings if available, then snippet, then fallback
+    const seoTitle = userSeoSettings.seoTitle?.trim()
+      ? `${baseTitle} - ${userSeoSettings.seoTitle}`
+      : snippet.seoTitle
+        ? `${baseTitle} - ${snippet.seoTitle}`
+        : `${baseTitle} - ${language.toUpperCase()} Code Snippet by ${author} | Snippets Library`;
 
-    // Enhanced SEO description
-    let seoDescription = snippet.seoDescription || baseDescription;
-    if (!snippet.seoDescription) {
+    let seoDescription = userSeoSettings.seoDescription?.trim()
+      ? userSeoSettings.seoDescription
+      : snippet.seoDescription || baseDescription;
+    if (!userSeoSettings.seoDescription && !snippet.seoDescription) {
       seoDescription = `${baseDescription} - A ${language} code snippet with ${codeLines} lines of code, shared by ${author}. Features syntax highlighting, easy copying, and clean formatting. Perfect for developers and programmers.`;
     }
 
-    // Enhanced keywords
     const keywordArray = [
       language,
       `${language} code`,
@@ -78,13 +83,13 @@ export function SharedSnippet() {
       'code sharing',
       'development tools',
       ...(snippet.tags || []),
+      ...(userSeoSettings.seoKeywords ? userSeoSettings.seoKeywords.split(',').map(k => k.trim()) : []),
       ...(snippet.seoKeywords ? snippet.seoKeywords.split(',').map(k => k.trim()) : []),
       ...(snippet.user?.seoKeywords ? snippet.user.seoKeywords.split(',').map(k => k.trim()) : [])
     ];
-
     const seoKeywords = [...new Set(keywordArray)].filter(Boolean).join(', ');
 
-    const seoImage = snippet.seoImageUrl || snippet.user?.seoImageUrl || snippet.user?.avatarUrl || `${window.location.origin}/icons/web-app-manifest-512x512.png`;
+    const seoImage = userSeoSettings.seoImageUrl?.trim() || snippet.seoImageUrl || snippet.user?.seoImageUrl || snippet.user?.avatarUrl || `${window.location.origin}/icons/web-app-manifest-512x512.png`;
     const twitterHandle = snippet.user?.socialLinks?.twitter ? `@${snippet.user.socialLinks.twitter.split('/').pop()}` : '@snippetslibrary';
 
     return {
@@ -117,8 +122,9 @@ export function SharedSnippet() {
     try {
       await navigator.clipboard.writeText(snippet.code);
       toast.success('Code copied to clipboard!');
-    } catch {
-      toast.error('Failed to copy code');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to copy code';
+      toast.error(message);
     }
   };
 
@@ -128,7 +134,7 @@ export function SharedSnippet() {
     try {
       await api.snippets.create({
         title: `Copy of ${snippet.title}`,
-        description: snippet.description,
+        description: snippet.description ?? undefined,
         code: snippet.code,
         language: snippet.language,
         tags: snippet.tags || [],
@@ -136,8 +142,9 @@ export function SharedSnippet() {
       });
       toast.success('Snippet copied to your dashboard!');
       navigate('/dashboard');
-    } catch {
-      toast.error('Failed to copy snippet');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to copy snippet';
+      toast.error(message);
     }
   };
 

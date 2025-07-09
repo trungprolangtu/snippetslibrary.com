@@ -15,10 +15,12 @@ import { StatsCard } from '../components/StatsCard';
 import { useDebounce } from 'use-debounce';
 import toast from 'react-hot-toast';
 import type { Snippet } from 'shared';
+import { useAuthActions } from '../hooks/useAuthActions';
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const { logout } = useAuthActions();
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,7 +40,8 @@ export function Dashboard() {
       const data = await api.snippets.getAll();
       setSnippets(data.snippets || []);
     } catch (error) {
-      toast.error('Failed to fetch snippets');
+      const message = error instanceof Error ? error.message : 'Failed to fetch snippets';
+      toast.error(message);
       console.error('Error fetching snippets:', error);
     } finally {
       setLoading(false);
@@ -58,7 +61,8 @@ export function Dashboard() {
       setIsCreateDialogOpen(false);
       fetchSnippets();
     } catch (error) {
-      toast.error('Failed to create snippet');
+      const message = error instanceof Error ? error.message : 'Failed to create snippet';
+      toast.error(message);
       console.error('Error creating snippet:', error);
     }
   };
@@ -66,7 +70,6 @@ export function Dashboard() {
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success('Logged out successfully');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -99,15 +102,15 @@ export function Dashboard() {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* Logo and Brand */}
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2">
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <Code2 className="h-6 w-6 text-primary" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold tracking-tight">Snippet Library</span>
-                  <span className="text-xs text-muted-foreground hidden sm:block">Your personal code snippet manager</span>
-                </div>
+            <div className="flex items-center">
+              <img src="/favicon.svg" alt="Logo" className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0" />
+              <div className="flex flex-col gap-0 space-y-0 ml-2 min-w-0">
+                <span className="text-base sm:text-lg font-semibold text-foreground m-0 p-0 truncate">
+                  Snippets Library
+                </span>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden lg:block m-0 p-0 truncate">
+                  Store, organize, and share your code snippets with ease
+                </p>
               </div>
             </div>
 

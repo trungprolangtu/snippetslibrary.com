@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useCallback, useMemo } from 'react';
 import type { UserSettings, UserSettingsContextType, UserSettingsProviderProps } from '../types';
 
 // Default code themes for light/dark UI themes
@@ -7,41 +7,43 @@ const DEFAULT_CODE_THEMES = {
   dark: 'github-dark',
 } as const;
 
-const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
+const DEFAULT_SETTINGS: UserSettings = {
+  username: '',
+  codeTheme: 'auto', // 'auto' means use default based on UI theme
+  uiTheme: 'system',
+  
+  // SEO settings
+  seoTitle: '',
+  seoDescription: '',
+  seoKeywords: '',
+  seoImageUrl: '',
+  
+  // Customization settings
+  customHeaderTitle: '',
+  customHeaderDescription: '',
+  customBrandingColor: '#3b82f6',
+  customBrandingLogo: '',
+  profileBannerUrl: '',
+  socialLinks: {},
+  customDomain: '',
+  
+  // Privacy settings
+  isProfilePublic: true,
+  showGithubStats: true,
+  showActivityFeed: true,
+  emailNotifications: true,
+  enableAnalytics: false,
+  twoFactorEnabled: false,
+};
+
+export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
 export function UserSettingsProvider({ children }: UserSettingsProviderProps) {
-  const [settings, setSettings] = useState<UserSettings>({
-    username: '',
-    codeTheme: 'auto', // 'auto' means use default based on UI theme
-    uiTheme: 'system',
-    
-    // SEO settings
-    seoTitle: '',
-    seoDescription: '',
-    seoKeywords: '',
-    seoImageUrl: '',
-    
-    // Customization settings
-    customHeaderTitle: '',
-    customHeaderDescription: '',
-    customBrandingColor: '#3b82f6',
-    customBrandingLogo: '',
-    profileBannerUrl: '',
-    socialLinks: {},
-    customDomain: '',
-    
-    // Privacy settings
-    isProfilePublic: true,
-    showGithubStats: true,
-    showActivityFeed: true,
-    emailNotifications: true,
-    enableAnalytics: false,
-    twoFactorEnabled: false,
-  });
+  const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load settings from localStorage or API
+    // Load settings from localStorage
     const loadSettings = () => {
       try {
         const savedSettings = localStorage.getItem('userSettings');
@@ -59,7 +61,7 @@ export function UserSettingsProvider({ children }: UserSettingsProviderProps) {
     loadSettings();
   }, []);
 
-  const updateSettings = (newSettings: Partial<UserSettings>) => {
+  const updateSettings = useCallback((newSettings: Partial<UserSettings>) => {
     setSettings(prev => {
       const updated = { ...prev, ...newSettings };
       // Save to localStorage
@@ -70,16 +72,16 @@ export function UserSettingsProvider({ children }: UserSettingsProviderProps) {
       }
       return updated;
     });
-  };
+  }, []);
 
-  const getEffectiveUiTheme = (): 'light' | 'dark' => {
+  const getEffectiveUiTheme = useCallback((): 'light' | 'dark' => {
     if (settings.uiTheme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      return typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
     return settings.uiTheme;
-  };
+  }, [settings.uiTheme]);
 
-  const getEffectiveCodeTheme = (): string => {
+  const getEffectiveCodeTheme = useCallback((): string => {
     // If user has set a custom code theme, use that
     if (settings.codeTheme && settings.codeTheme !== 'auto') {
       return settings.codeTheme;
@@ -87,25 +89,19 @@ export function UserSettingsProvider({ children }: UserSettingsProviderProps) {
     // Otherwise use default based on UI theme
     const uiTheme = getEffectiveUiTheme();
     return DEFAULT_CODE_THEMES[uiTheme];
-  };
+  }, [settings.codeTheme, getEffectiveUiTheme]);
+
+  const value = useMemo(() => ({
+    settings,
+    updateSettings,
+    isLoading,
+    getEffectiveCodeTheme,
+    getEffectiveUiTheme,
+  }), [settings, updateSettings, isLoading, getEffectiveCodeTheme, getEffectiveUiTheme]);
 
   return (
-    <UserSettingsContext.Provider value={{ 
-      settings, 
-      updateSettings, 
-      isLoading, 
-      getEffectiveCodeTheme, 
-      getEffectiveUiTheme 
-    }}>
+    <UserSettingsContext.Provider value={value}>
       {children}
     </UserSettingsContext.Provider>
   );
-}
-
-export function useUserSettings() {
-  const context = useContext(UserSettingsContext);
-  if (context === undefined) {
-    throw new Error('useUserSettings must be used within a UserSettingsProvider');
-  }
-  return context;
 }

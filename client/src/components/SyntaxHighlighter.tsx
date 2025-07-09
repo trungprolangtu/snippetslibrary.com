@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { createHighlighter, type Highlighter, type BundledLanguage } from 'shiki';
+import { shikiService } from '../lib/shiki';
+import DOMPurify from 'dompurify';
 
 interface SyntaxHighlighterProps {
   code: string;
@@ -7,9 +8,6 @@ interface SyntaxHighlighterProps {
   theme?: 'dark-plus' | 'light-plus';
   className?: string;
 }
-
-// Create a singleton highlighter instance to avoid recreating it
-let globalHighlighter: Highlighter | null = null;
 
 export function SyntaxHighlighter({
   code,
@@ -27,38 +25,31 @@ export function SyntaxHighlighter({
       try {
         setIsLoading(true);
         
-        // Initialize highlighter if not already done
-        if (!globalHighlighter) {
-          globalHighlighter = await createHighlighter({
-            themes: [theme],
-            langs: [], // Start with no languages, load them dynamically
-          });
-        }
-
-        // Check if the language is already loaded
-        const loadedLanguages = globalHighlighter.getLoadedLanguages();
-        if (!loadedLanguages.includes(language)) {
-          // Dynamically load the language
-          await globalHighlighter.loadLanguage(language as BundledLanguage);
-        }
-
-        // Check if the theme is already loaded
-        const loadedThemes = globalHighlighter.getLoadedThemes();
-        if (!loadedThemes.includes(theme)) {
-          await globalHighlighter.loadTheme(theme);
-        }
-
+        // Sanitize input code to prevent XSS
+        const sanitizedCode = code.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '// Script removed for security');
+        
+        // Use the shared Shiki service
+        const html = await shikiService.highlight(sanitizedCode, language, theme);
+        
         if (!cancelled) {
-          const html = globalHighlighter.codeToHtml(code, {
-            lang: language,
-            theme: theme,
+          // Sanitize the HTML output to prevent XSS
+          const sanitizedHtml = DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: ['pre', 'code', 'span', 'div'],
+            ALLOWED_ATTR: ['class', 'style', 'data-*'],
+            KEEP_CONTENT: true,
           });
-          setHighlightedCode(html);
+          setHighlightedCode(sanitizedHtml);
         }
       } catch (error) {
         console.error('Error highlighting code:', error);
         if (!cancelled) {
-          setHighlightedCode(`<pre><code>${code}</code></pre>`);
+          // Fallback to plain text with proper escaping
+          const escapeHtml = (text: string) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+          };
+          setHighlightedCode(`<pre><code>${escapeHtml(code)}</code></pre>`);
         }
       } finally {
         if (!cancelled) {

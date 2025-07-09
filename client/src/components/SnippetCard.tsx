@@ -84,7 +84,7 @@ export function SnippetCard({ snippet, onUpdate }: SnippetCardProps) {
     try {
       await api.snippets.update(snippet.id, {
         title: editForm.title.trim(),
-        description: editForm.description.trim() || null,
+        description: editForm.description.trim() || undefined,
         code: editForm.code,
         language: editForm.language,
         isPublic: editForm.isPublic
@@ -215,6 +215,7 @@ export function SnippetCard({ snippet, onUpdate }: SnippetCardProps) {
               code={truncateCode(snippet.code)}
               language={snippet.language}
               className="text-xs"
+              hideScroll={true}
             />
           </div>
 

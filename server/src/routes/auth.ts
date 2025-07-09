@@ -48,7 +48,7 @@ auth.get('/callback', async (c) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 7 * 24 * 60 * 60, // 7 days instead of 30
     });
 
     // Clear the OAuth state cookie
@@ -59,8 +59,8 @@ auth.get('/callback', async (c) => {
       maxAge: 0,
     });
 
-    // Redirect to frontend with success
-    return c.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}?auth=success`);
+    // Redirect to frontend dashboard with success
+    return c.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard?auth=success`);
   } catch (error) {
     console.error('OAuth callback error:', error);
     // Redirect to frontend with error

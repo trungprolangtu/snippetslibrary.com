@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import type { User } from 'shared';
 import type { AuthContextType, AuthProviderProps } from '../types';
 import { api } from '../lib/api';
@@ -16,20 +16,38 @@ export function useAuth() {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
+  const authCheckRef = useRef<Promise<void> | null>(null);
 
-  const checkAuth = async () => {
-    try {
-      const userData = await api.auth.me();
-      setUser(userData.user);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      setUser(null);
-    } finally {
-      setLoading(false);
+  const checkAuth = useCallback(async () => {
+    // Prevent multiple simultaneous auth checks
+    if (authCheckRef.current) {
+      return authCheckRef.current;
     }
-  };
 
-  const login = async () => {
+    // Don't check again if already initialized and not loading
+    if (initialized && !loading) {
+      return;
+    }
+
+    authCheckRef.current = (async () => {
+      try {
+        setLoading(true);
+        const userData = await api.auth.me();
+        setUser(userData.user);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+        setInitialized(true);
+        authCheckRef.current = null;
+      }
+    })();
+
+    return authCheckRef.current;
+  }, [initialized, loading]);
+
+  const login = useCallback(async () => {
     try {
       const { url } = await api.auth.login();
       window.location.href = url;
@@ -37,39 +55,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.error('Login failed:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await api.auth.logout();
       setUser(null);
+      setInitialized(false);
     } catch (error) {
       console.error('Logout failed:', error);
       // Clear user anyway
       setUser(null);
-    }
-  };
-
-  useEffect(() => {
-    // Check for auth callback
-    const urlParams = new URLSearchParams(window.location.search);
-    const authStatus = urlParams.get('auth');
-    const errorStatus = urlParams.get('error');
-    
-    if (authStatus === 'success') {
-      // Remove auth params from URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-      checkAuth();
-    } else if (errorStatus) {
-      // Handle auth error
-      console.error('Authentication error:', errorStatus);
-      window.history.replaceState({}, document.title, window.location.pathname);
-      setLoading(false);
-    } else {
-      // Normal auth check
-      checkAuth();
+      setInitialized(false);
     }
   }, []);
+
+  // Initial auth check on mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const value = {
     user,

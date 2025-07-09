@@ -108,28 +108,6 @@
       ]
     }
   },
-  "protocol_handlers": [
-    {
-      "protocol": "web+snippetslibrary",
-      "url": "/share?url=%s"
-    }
-  ],
-  "file_handlers": [
-    {
-      "action": "/file-handler",
-      "accept": {
-        "text/plain": [".txt", ".md", ".js", ".ts", ".py", ".html", ".css", ".json", ".xml"],
-        "text/javascript": [".js", ".jsx", ".mjs"],
-        "text/typescript": [".ts", ".tsx"],
-        "text/python": [".py", ".pyw"],
-        "text/html": [".html", ".htm"],
-        "text/css": [".css", ".scss", ".sass", ".less"],
-        "application/json": [".json"],
-        "text/xml": [".xml"],
-        "text/markdown": [".md", ".markdown"]
-      }
-    }
-  ],
   "edge_side_panel": {
     "preferred_width": 400
   },

@@ -5,59 +5,34 @@ import { z } from 'zod';
 import { db } from '../db';
 import { snippets, users } from '../db/schema';
 import { authMiddleware, optionalAuthMiddleware, type Variables } from '../lib/middleware';
+import { enhancedValidationSchemas, sanitizeInput } from '../lib/validation';
 import type { ApiResponse } from 'shared';
 
 const snippetsRouter = new Hono<{ Variables: Partial<Variables> }>();
 
-// Validation schemas
+// Enhanced validation schemas
 const createSnippetSchema = z.object({
-  title: z.string()
-    .min(1, 'Title is required')
-    .max(255, 'Title must be less than 255 characters')
-    .trim(),
-  description: z.string()
-    .max(1000, 'Description must be less than 1000 characters')
-    .trim()
-    .optional()
-    .nullable(),
-  code: z.string()
-    .min(1, 'Code is required')
-    .max(100000, 'Code must be less than 100KB'),
-  language: z.string()
-    .min(1, 'Language is required')
-    .max(50, 'Language must be less than 50 characters')
-    .regex(/^[a-z0-9+#-]+$/, 'Invalid language format'),
-  tags: z.array(z.string().max(50)).max(10).optional(),
+  title: enhancedValidationSchemas.snippetTitle,
+  description: enhancedValidationSchemas.snippetDescription,
+  code: enhancedValidationSchemas.snippetCode,
+  language: enhancedValidationSchemas.language,
+  tags: enhancedValidationSchemas.tags,
   isPublic: z.boolean().default(false),
 });
 
 const updateSnippetSchema = z.object({
-  title: z.string()
-    .min(1, 'Title is required')
-    .max(255, 'Title must be less than 255 characters')
-    .trim()
-    .optional(),
-  description: z.string()
-    .max(1000, 'Description must be less than 1000 characters')
-    .trim()
-    .optional()
-    .nullable(),
-  code: z.string()
-    .min(1, 'Code is required')
-    .max(100000, 'Code must be less than 100KB')
-    .optional(),
-  language: z.string()
-    .min(1, 'Language is required')
-    .max(50, 'Language must be less than 50 characters')
-    .regex(/^[a-z0-9+#-]+$/, 'Invalid language format')
-    .optional(),
-  tags: z.array(z.string().max(50)).max(10).optional(),
+  title: enhancedValidationSchemas.snippetTitle.optional(),
+  description: enhancedValidationSchemas.snippetDescription.optional(),
+  code: enhancedValidationSchemas.snippetCode.optional(),
+  language: enhancedValidationSchemas.language.optional(),
+  tags: enhancedValidationSchemas.tags.optional(),
   isPublic: z.boolean().optional(),
 });
 
 const paginationSchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(50).default(20),
+  page: enhancedValidationSchemas.page,
+  limit: enhancedValidationSchemas.limit,
+  search: enhancedValidationSchemas.searchQuery,
 });
 
 // Rate limiting helper (simple in-memory implementation)

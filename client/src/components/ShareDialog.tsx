@@ -61,7 +61,8 @@ export function ShareDialog({
       toast.success("Share link generated successfully!");
     } catch (error) {
       console.error("Generate share link error:", error);
-      toast.error("Failed to generate share link");
+      const message = error instanceof Error ? error.message : "Failed to generate share link";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,7 @@ export function ShareDialog({
       setTimeout(() => setCopied(false), 3000);
     } catch (error) {
       console.error("Copy error:", error);
-      toast.error("Failed to copy link");
+      toast.error(error instanceof Error ? error.message : "Failed to copy link");
     }
   };
 
@@ -99,7 +100,7 @@ export function ShareDialog({
       toast.success("Share link revoked successfully!");
     } catch (error) {
       console.error("Revoke error:", error);
-      toast.error("Failed to revoke share link");
+      toast.error(error instanceof Error ? error.message : "Failed to revoke share link");
     } finally {
       setIsRevoking(false);
     }

@@ -27,12 +27,54 @@ const app = new Hono();
 
 // Middleware
 app.use('*', logger());
+
+// Security headers middleware
+app.use('*', async (c, next) => {
+  // Content Security Policy
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https://api.github.com https://static.cloudflareinsights.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join('; ');
+
+  c.header('Content-Security-Policy', csp);
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('X-Frame-Options', 'DENY');
+  c.header('X-XSS-Protection', '1; mode=block');
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  c.header('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+
+  await next();
+});
+
 app.use('*', cors({
   origin: (origin) => {
     console.log('CORS origin request:', origin);
     
     // Allow requests from any localhost port in development
     if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return origin;
+    }
+    
+    // Allow all Cloudflare domains and subdomains
+    if (origin && (
+      origin.includes('cloudflare.com') || 
+      origin.includes('cloudflareinsights.com') ||
+      origin.includes('cf-assets.com') ||
+      origin.includes('cloudflarecdn.com') ||
+      origin.includes('cloudflare-analytics.com') ||
+      origin.includes('cloudflareanalytics.com') ||
+      origin.includes('cloudflareinsights.com') ||
+      origin.includes('static.cloudflareinsights.com') ||
+      origin.endsWith('.cloudflare.com') ||
+      origin.endsWith('.cloudflareinsights.com')
+    )) {
       return origin;
     }
     
