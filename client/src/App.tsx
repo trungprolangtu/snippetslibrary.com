@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Suspense, lazy, useEffect } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './contexts/AuthContext';
 import { UserSettingsProvider } from './contexts/UserSettingsContext';
 import { ThemeProvider } from './components/ThemeProvider';
@@ -92,26 +93,28 @@ function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <Router>
-        <AuthProvider>
-          <UserSettingsProvider>
-            <ThemeProvider>
-              <div className="min-h-screen bg-background flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip" suppressHydrationWarning>
-                <AuthHandler />
-                <AppRoutes />
-                <Toaster 
-                  position="top-right"
-                  toastOptions={{
-                    className: 'bg-card text-card-foreground border',
-                  }}
-                />
-              </div>
-            </ThemeProvider>
-          </UserSettingsProvider>
-        </AuthProvider>
-      </Router>
-    </ErrorBoundary>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <Router>
+          <AuthProvider>
+            <UserSettingsProvider>
+              <ThemeProvider>
+                <div className="min-h-screen bg-background flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip" suppressHydrationWarning>
+                  <AuthHandler />
+                  <AppRoutes />
+                  <Toaster 
+                    position="top-right"
+                    toastOptions={{
+                      className: 'bg-card text-card-foreground border',
+                    }}
+                  />
+                </div>
+              </ThemeProvider>
+            </UserSettingsProvider>
+          </AuthProvider>
+        </Router>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }
 

@@ -9,7 +9,7 @@ import FeaturesPlanet from "@/components/FeaturesPlanet";
 import Cta from "@/components/Cta";
 
 import { useAuth } from "../contexts/AuthContext";
-import { SEOHead } from '../components/SEOHead';
+import { SEOHead } from '../components/SEOHeadSSR';
 import toast from "react-hot-toast";
 
 export function LandingPage() {
@@ -39,7 +39,7 @@ export function LandingPage() {
     title: 'Snippets Library - Organize, Share & Discover Code Snippets',
     description: 'The ultimate code snippet manager for developers. Organize, share, and discover code snippets with beautiful syntax highlighting, GitHub integration, and powerful search. Perfect for teams and individual developers.',
     keywords: 'code snippets, code manager, developer tools, programming, syntax highlighting, GitHub, code sharing, developer productivity, code organization, snippet library, programming languages, code examples, development tools, open source',
-    image: `${window.location.origin}/icons/web-app-manifest-512x512.png`,
+    image: '/icons/web-app-manifest-512x512.png',
     type: 'website' as const,
     author: 'Cojocaru David',
     siteName: 'Snippets Library',
@@ -47,7 +47,7 @@ export function LandingPage() {
     category: 'Developer Tools',
     tags: ['code snippets', 'developer tools', 'programming', 'GitHub', 'syntax highlighting', 'productivity'],
     breadcrumbs: [
-      { name: 'Home', url: `${window.location.origin}/` }
+      { name: 'Home', url: '/' }
     ]
   };
 

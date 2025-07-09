@@ -12,7 +12,7 @@ import { ShareDialog } from '../components/ShareDialog';
 import { api } from '../lib/api';
 import toast from 'react-hot-toast';
 import type { Snippet } from 'shared';
-import { SEOHead } from '../components/SEOHead';
+import { SEOHead } from '../components/SEOHeadSSR';
 
 export function SnippetDetail() {
   const { id } = useParams<{ id: string }>();
@@ -108,9 +108,9 @@ export function SnippetDetail() {
       readTime,
       noIndex: !snippet.isPublic, // Only index public snippets
       breadcrumbs: [
-        { name: 'Home', url: `${window.location.origin}/` },
-        { name: 'Dashboard', url: `${window.location.origin}/dashboard` },
-        { name: snippet.title, url: `${window.location.origin}/snippet/${id}` }
+        { name: 'Home', url: '/' },
+        { name: 'Dashboard', url: '/dashboard' },
+        { name: snippet.title, url: `/snippet/${id}` }
       ]
     };
   };

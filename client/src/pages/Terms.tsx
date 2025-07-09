@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { SEOHead } from '../components/SEOHead';
+import { SEOHead } from '../components/SEOHeadSSR';
 
 export function Terms() {
   return (

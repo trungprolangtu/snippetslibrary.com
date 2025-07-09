@@ -4,7 +4,10 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(), 
+    tailwindcss()
+  ],
   resolve: {
     alias: {
       "@client": path.resolve(__dirname, "./src"),
@@ -26,6 +29,12 @@ export default defineConfig({
     }
   },
   ssr: {
-    noExternal: ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-select', '@radix-ui/react-tabs']
+    noExternal: [
+      '@radix-ui/react-dialog', 
+      '@radix-ui/react-popover', 
+      '@radix-ui/react-select', 
+      '@radix-ui/react-tabs',
+      'react-helmet-async'
+    ]
   }
 })

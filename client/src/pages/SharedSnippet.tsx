@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { CodeBlock } from '../components/CodeBlock';
 import { LanguageBadge } from '../components/LanguageBadge';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { SEOHead } from '../components/SEOHead';
+import { SEOHead } from '../components/SEOHeadSSR';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserSettings } from '../hooks/useUserSettings';
 import { api } from '../lib/api';
@@ -89,7 +89,7 @@ export function SharedSnippet() {
     ];
     const seoKeywords = [...new Set(keywordArray)].filter(Boolean).join(', ');
 
-    const seoImage = userSeoSettings.seoImageUrl?.trim() || snippet.seoImageUrl || snippet.user?.seoImageUrl || snippet.user?.avatarUrl || `${window.location.origin}/icons/web-app-manifest-512x512.png`;
+    const seoImage = userSeoSettings.seoImageUrl?.trim() || snippet.seoImageUrl || snippet.user?.seoImageUrl || snippet.user?.avatarUrl || '/icons/web-app-manifest-512x512.png';
     const twitterHandle = snippet.user?.socialLinks?.twitter ? `@${snippet.user.socialLinks.twitter.split('/').pop()}` : '@snippetslibrary';
 
     return {
@@ -107,9 +107,9 @@ export function SharedSnippet() {
       tags: snippet.tags || [],
       readTime,
       breadcrumbs: [
-        { name: 'Home', url: `${window.location.origin}/` },
-        { name: 'Shared Snippets', url: `${window.location.origin}/share` },
-        { name: snippet.title, url: `${window.location.origin}/share/${shareId}` }
+        { name: 'Home', url: '/' },
+        { name: 'Shared Snippets', url: '/share' },
+        { name: snippet.title, url: `/share/${shareId}` }
       ]
     };
   };
