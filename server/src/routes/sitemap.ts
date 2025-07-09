@@ -45,15 +45,17 @@ sitemapRouter.get('/sitemap.xml', async (c) => {
   <url>
     <loc>${baseUrl}/share/${snippet.shareId}</loc>
     <lastmod>${new Date(snippet.updatedAt).toISOString()}</lastmod>
-    <changefreq>monthly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>`).join('')}
   
 </urlset>`;
 
     c.header('Content-Type', 'application/xml');
-    c.header('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-    return c.text(sitemapXml);
+    c.header('Cache-Control', 'public, max-age=3600');
+    c.status(200);
+    c.res.headers.set('Content-Type', 'application/xml');
+    return new Response(sitemapXml, { status: 200, headers: { 'Content-Type': 'application/xml', 'Cache-Control': 'public, max-age=3600' } });
   } catch (error) {
     console.error('Sitemap generation error:', error);
     return c.text('Error generating sitemap', 500);
@@ -76,7 +78,7 @@ Sitemap: ${baseUrl}/sitemap.xml
 `;
 
   c.header('Content-Type', 'text/plain');
-  c.header('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+  c.header('Cache-Control', 'public, max-age=86400');
   return c.text(robotsTxt);
 });
 

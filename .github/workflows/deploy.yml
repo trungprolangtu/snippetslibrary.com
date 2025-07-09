@@ -32,3 +32,7 @@ jobs:
     - name: 🚀 Execute deployment script on VPS
       run: |
         ssh -p "${{ secrets.VPS_PORT }}" -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "bash /var/www/snippetslibrary/deploy.sh"
+
+    - name: 🔄 Run database migrations
+      run: |
+        ssh -p "${{ secrets.VPS_PORT }}" -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd /var/www/snippetslibrary/server && bun run db:migrate"
