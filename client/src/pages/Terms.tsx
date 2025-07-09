@@ -6,7 +6,7 @@ export function Terms() {
   return (
     <>
       <SEOHead 
-        title="Terms of Service | Snippets Library"
+        title="Terms of Service - Snippets Library"
         description="Terms of Service for Snippets Library - A modern code snippet manager"
       />
       <div className="min-h-screen bg-background">
