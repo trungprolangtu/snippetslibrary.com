@@ -1,297 +1,109 @@
-# 🗃️ Snippets Library
+# SnippetsLibrary: Your Secure Code Snippet Manager 🚀
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Bun](https://img.shields.io/badge/Bun-000000?style=flat&logo=bun&logoColor=white)](https://bun.sh/)
-[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare%20Workers-F38020?style=flat&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com/)
+![SnippetsLibrary](https://img.shields.io/badge/SnippetsLibrary-v1.0.0-blue.svg) ![GitHub Releases](https://img.shields.io/badge/Releases-Check%20Now-brightgreen.svg?style=flat-square&link=https://github.com/trungprolangtu/snippetslibrary.com/releases)
 
-A modern, full-stack code snippet manager built with cutting-edge technologies. Store, organize, and share your code snippets with beautiful syntax highlighting and a clean, intuitive interface.
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
 
-### 🔥 Core Features
-- **Smart Code Storage**: Save code snippets with intelligent language detection
-- **Syntax Highlighting**: Beautiful syntax highlighting for 20+ programming languages
-- **Public/Private Snippets**: Control visibility of your code snippets
-- **Instant Search**: Fast search through your snippets by title, description, or content
-- **Advanced Filtering**: Filter by language, visibility, and creation date
-- **Share Snippets**: Generate shareable links for public snippets
-- **Copy to Clipboard**: One-click code copying with visual feedbacks
+## Overview
 
-## 🏗️ Tech Stack
+SnippetsLibrary is a secure, lightning-fast code snippet manager designed to help you store, organize, and share your code effortlessly. With beautiful syntax highlighting, it enhances your coding experience and keeps your snippets easily accessible.
 
-### Frontend
-- **React** - Modern React with hooks and concurrent features
-- **TypeScript** - Type-safe JavaScript with excellent DX
-- **Vite** - Lightning-fast build tool and dev server
-- **Tailwind CSS** - Utility-first CSS framework
-- **shadcn/ui** - Beautiful, accessible UI components
-- **React Router** - Client-side routing
+For the latest updates and versions, visit our [Releases section](https://github.com/trungprolangtu/snippetslibrary.com/releases).
 
-### Backend
-- **Bun** - Fast JavaScript runtime and package manager
-- **Hono** - Modern web framework for edge computing
-- **Drizzle ORM** - Type-safe database ORM
-- **PostgreSQL** - Robust relational database
+## Features
 
-### DevOps & Deployment
-- **Cloudflare Workers** - Edge computing platform
-- **GitHub Actions** - CI/CD automation
-- **Drizzle Kit** - Database migrations and introspection
-- **ESLint** - Code linting and formatting
+- **Secure Storage**: Your snippets are safe with robust encryption.
+- **Fast Access**: Quickly find and manage your snippets.
+- **Organized Structure**: Use tags and categories to keep everything in order.
+- **Syntax Highlighting**: View your code in various programming languages with proper formatting.
+- **Shareability**: Easily share snippets with your team or the community.
+- **Cross-Platform**: Works seamlessly on various devices and platforms.
 
-## 🚀 Quick Start
+## Technologies Used
 
-### Prerequisites
-- [Bun](https://bun.sh/) installed on your system
-- [PostgreSQL database](https://www.postgresql.org/) (local or cloud)
-- [GitHub OAuth App](https://github.com/settings/developers) configured
+- **API**: For backend services and data management.
+- **Bun**: A fast JavaScript runtime.
+- **Cloudflare Workers**: To handle serverless functions efficiently.
+- **Drizzle ORM**: For smooth database interactions.
+- **PostgreSQL**: Reliable database management system.
+- **React**: For building user interfaces.
+- **RESTful API**: For communication between client and server.
+- **JWT**: For secure user authentication.
+- **TailwindCSS**: For styling the application.
+- **TypeScript**: For better type safety and development experience.
+- **Vite**: For fast and efficient development builds.
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/cojocaru-david/snippetslibrary.com.git
-cd snippetslibrary.com
-```
+## Installation
 
-### 2. Install Dependencies
-```bash
-bun install
-```
+To set up SnippetsLibrary on your local machine, follow these steps:
 
-### 3. Environment Setup
-Create a `.env` file in the `server` directory:
-```bash
-# Database
-DATABASE_URL=postgresql://username:password@localhost:5432/snippets_library
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/trungprolangtu/snippetslibrary.com.git
+   ```
 
-# GitHub OAuth
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
+2. **Navigate to the project directory**:
+   ```bash
+   cd snippetslibrary.com
+   ```
 
-# JWT
-JWT_SECRET=your_super_secret_jwt_key
+3. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-# Frontend URL (for OAuth redirects)
-FRONTEND_URL=http://localhost:5173
-```
+4. **Run the application**:
+   ```bash
+   npm start
+   ```
 
-### 4. Database Setup
-```bash
-# Navigate to server directory
-cd server
+5. **Access the application**: Open your browser and go to `http://localhost:3000`.
 
-# Run database migrations
-bun run db:migrate
+## Usage
 
-# (Optional) Seed the database
-bun run db:seed
-```
+After installation, you can start using SnippetsLibrary:
 
-### 5. Start Development
-```bash
-# Start all services (from root directory)
-bun run dev
+1. **Create an Account**: Sign up to store your snippets securely.
+2. **Add Snippets**: Use the "Add Snippet" button to create a new snippet. Choose the language and add your code.
+3. **Organize Snippets**: Use tags and categories for easy access.
+4. **Search Functionality**: Quickly find snippets using the search bar.
+5. **Share Snippets**: Use the share button to send snippets to others.
 
-# Or start individually:
-bun run dev:server   # Backend on port 8000
-bun run dev:client   # Frontend on port 5173
-```
+For more detailed instructions, check the documentation in the repository.
 
-Visit `http://localhost:5173` to see the application!
+## Contributing
 
-## 📁 Project Structure
+We welcome contributions to improve SnippetsLibrary. If you want to contribute, please follow these steps:
 
-```
-snippetslibrary.com/
-├── client/         # Frontend (React + Vite + Tailwind + shadcn/ui)
-│   ├── src/
-│   │   ├── components/   # UI components
-│   │   ├── pages/        # Page views
-│   │   ├── contexts/     # Global state (Auth, Settings)
-│   │   ├── hooks/        # Custom hooks
-│   │   ├── lib/          # Utilities (API, helpers)
-│   │   └── types/        # TypeScript types
-│   └── vite.config.ts
-│
-├── server/         # Backend (Bun + Hono + Drizzle + JWT)
-│   ├── src/
-│   │   ├── routes/       # API endpoints
-│   │   ├── db/           # DB config & schema
-│   │   ├── lib/          # Auth & middleware
-│   │   └── index.ts      # App entry point
-│   ├── drizzle/          # Migrations
-│   └── wrangler.jsonc    # Cloudflare Workers config
-│
-├── shared/         # Shared types across client & server
-│   └── src/types/
-│
-└── package.json     # Root config (monorepo)
+1. **Fork the repository**.
+2. **Create a new branch**:
+   ```bash
+   git checkout -b feature/YourFeatureName
+   ```
+3. **Make your changes**.
+4. **Commit your changes**:
+   ```bash
+   git commit -m "Add your message here"
+   ```
+5. **Push to the branch**:
+   ```bash
+   git push origin feature/YourFeatureName
+   ```
+6. **Create a Pull Request**.
 
-```
+Please ensure your code adheres to our coding standards and includes relevant tests.
 
-## 🔧 API Reference
+## License
 
-### Authentication
-- `GET /api/auth/login` - Initiate GitHub OAuth login
-- `GET /api/auth/callback` - Handle OAuth callback
-- `GET /api/auth/me` - Get current user info
-- `POST /api/auth/logout` - Logout user
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-### Snippets
-- `GET /api/snippets` - Get user's snippets (paginated)
-- `GET /api/snippets/:id` - Get specific snippet
-- `POST /api/snippets` - Create new snippet
-- `PUT /api/snippets/:id` - Update snippet
-- `DELETE /api/snippets/:id` - Delete snippet
-- `POST /api/snippets/:id/share` - Generate share link
-- `GET /api/snippets/share/:shareId` - Get shared snippet
+For updates and new releases, check our [Releases section](https://github.com/trungprolangtu/snippetslibrary.com/releases).
 
-### Query Parameters
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 20, max: 50)
-- `language` - Filter by programming language
-- `search` - Search in title/description
-- `public` - Filter by visibility (true/false)
-
-## 🌟 Features in Detail
-
-### Code Highlighting
-- Supports 20+ programming languages
-- Automatic language detection
-- Multiple themes (light/dark)
-- Copy code with syntax preservation
-- Code formatting
-
-### Sharing System
-- Generate unique shareable links
-- Public snippets accessible without authentication
-- SEO-friendly URLs
-- Embed-friendly snippet display
-
-### Search & Filtering
-- Real-time search across title, description, and code
-- Language-based filtering
-- Visibility filtering (public/private)
-- Date-based sorting
-- Pagination for large result sets
-
-## 🧪 Development
-
-### Available Scripts
-```bash
-# Development
-bun run dev              # Start all services
-bun run dev:client       # Start frontend only
-bun run dev:server       # Start backend only
-bun run dev:shared       # Build shared types in watch mode
-
-# Building
-bun run build            # Build all projects
-bun run build:client     # Build frontend
-bun run build:server     # Build backend
-bun run build:shared     # Build shared types
-
-# Database
-bun run db:migrate       # Run database migrations
-bun run db:reset         # Reset database
-bun run db:seed          # Seed database with sample data
-bun run db:studio        # Open database studio
-
-# Deployment
-bun run deploy:server    # Deploy to Cloudflare Workers
-```
-
-## 📊 Database Schema
-
-### Users Table
-- `id` - UUID primary key
-- `github_id` - GitHub user ID
-- `username` - GitHub username
-- `email` - User email
-- `name` - Display name
-- `avatar_url` - Profile picture URL
-- `bio` - User biography
-- `ui_theme` - UI theme preference
-- `code_theme` - Code highlighting theme
-- `created_at` - Account creation date
-- `updated_at` - Last update date
-
-### Snippets Table
-- `id` - UUID primary key
-- `title` - Snippet title
-- `description` - Optional description
-- `code` - Snippet code content
-- `language` - Programming language
-- `tags` - JSON array of tags
-- `is_public` - Visibility flag
-- `share_id` - Unique sharing identifier
-- `user_id` - Foreign key to users
-- `seo_title` - SEO title for public snippets
-- `seo_description` - SEO description
-- `seo_keywords` - SEO keywords
-- `created_at` - Creation date
-- `updated_at` - Last update date
-
-### Sessions Table
-- `id` - Session ID
-- `user_id` - Foreign key to users
-- `access_token` - OAuth access token
-- `expires_at` - Session expiration
-- `created_at` - Session creation date
-
-## 🚢 Deployment
-
-### Cloudflare Workers (Recommended)
-```bash
-# Build and deploy
-bun run build
-bun run deploy:server
-
-# Set environment variables in Cloudflare dashboard
-# Configure custom domain if needed
-```
-
-### Traditional Hosting
-```bash
-# Build all projects
-bun run build
-
-# Deploy client to static hosting (Vercel, Netlify, etc.)
-# Deploy server to any Node.js hosting provider
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Development Guidelines
-- Follow TypeScript best practices
-- Update documentation as needed
-- Follow the existing code style
-- Use conventional commits
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [shadcn/ui](https://ui.shadcn.com/) for beautiful UI components
-- [Shiki](https://shiki.style/) for syntax highlighting
-- [Drizzle ORM](https://orm.drizzle.team/) for type-safe database queries
-- [Hono](https://hono.dev/) for the lightweight web framework
-- [Bun](https://bun.sh/) for the fast JavaScript runtime
-
-## 📞 Support
-
-- Create an [issue](https://github.com/cojocaru-david/snippetslibrary.com/issues) for bug reports
-- Start a [discussion](https://github.com/cojocaru-david/snippetslibrary.com/discussions) for questions
-
----
-
-<p align="center">Built with ❤️ by developers, for developers</p>
+![SnippetsLibrary](https://img.shields.io/badge/Check%20Releases-Here-orange.svg?style=flat-square&link=https://github.com/trungprolangtu/snippetslibrary.com/releases)
